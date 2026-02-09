@@ -5,7 +5,7 @@ function Hero() {
   return (
     <section className="w-full flex px-4 lg:px-16">
       <div className=" flex flex-col w-full min-h-[90vh] bg-[#1B1B1B] rounded-b-[3rem] pt-[9rem] px-6 lg:px-14">
-        <h1 className="text-neutral-300 heading text-3xl lg:text-[4rem] max-w-6xl leading-[1.2]">
+        <h1 className="text-neutral-300 heading text-5xl lg:text-[4rem] max-w-6xl leading-[1.2]">
           <span className=" bg-gradient-to-r from-violet-500 to-orange-500 bg-clip-text text-transparent">
             Boost your &quot;Passion & Creativity&quot; <br />{" "}
           </span>
