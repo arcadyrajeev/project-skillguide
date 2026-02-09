@@ -16,7 +16,7 @@ export default function CourseCard({
   likes,
 }: CourseCardProps) {
   return (
-    <div className="w-full rounded-2xl bg-white p-3 sm:p-4 body-text shadow-sm">
+    <div className="w-full rounded-2xl  bg-white p-3 sm:p-4 body-text shadow-sm">
       {/* Thumbnail */}
       <div className="mb-3 sm:mb-4 aspect-video w-full rounded-xl bg-gray-300" />
 
