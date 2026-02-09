@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+:root {
+  --background: #efefef;
+  --foreground: #1b1b1b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@font-face {
+  font-family: "Hammer";
+  src: url("/fonts/HammersmithOne-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Instrument";
+  src: url("/fonts/InstrumentSans-VariableFont.ttf") format("truetype");
+}
+
+.heading {
+  font-family: "Hammer", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.body-text {
+  font-family: "Instrument", sans-serif;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.cta-text {
+  font-family: "Instrument", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
