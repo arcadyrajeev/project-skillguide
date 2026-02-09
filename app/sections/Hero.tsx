@@ -11,7 +11,7 @@ function Hero() {
           </span>
           with Guided Learning Paths
         </h1>
-        <div className="w-full h-full  flex flex-col lg:flex-row justify-between pt-12 pb-10 lg:pb-0">
+        <div className="w-full h-full  flex flex-col lg:flex-row justify-between pt-12 pb-10 lg:pb-20">
           <div className="flex items-center flex-col gap-2">
             <div className="flex group cursor-pointer relative overflow-hidden items-center mt-auto bg-blue-700 w-full lg:w-100 h-16 lg:h-20 rounded-full px-8">
               {" "}
