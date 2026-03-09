@@ -1,4 +1,5 @@
 import Categories from "./sections/Categories";
+import FAQSection from "./sections/Faq";
 import Featured from "./sections/Featured";
 import Hero from "./sections/Hero";
 import Reviews from "./sections/Reviews";
@@ -14,6 +15,7 @@ export default function Home() {
       <Categories />
       <WhyChooseUs />
       <Reviews />
+      <FAQSection />
     </div>
   );
 }
