@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
     { name: "Teachers", href: "/teachers" },
@@ -13,78 +16,148 @@ export default function Navbar() {
     { name: "My Courses", href: "/courses" },
   ];
 
+  // Close on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
   return (
-    <nav className="fixed top-0 z-50 w-full bg-transparent px-6 py-4">
-      <div className="mx-auto flex max-w-[90vw] items-center justify-between rounded-xl bg-[#1B1B1B] px-6 py-3">
+    <nav className="fixed top-0 z-50 w-full px-4 py-4">
+      <div className="mx-auto flex max-w-[90vw] items-center justify-between rounded-xl bg-[#1B1B1B] px-4 py-3">
         {/* Left */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           <Link
             href="/"
-            className="text-white heading text-xl font-semibold tracking-wide leading-tight"
+            className="text-white text-lg font-semibold leading-tight"
           >
-            SKILL
-            <br />
-            GUIDE
+            SKILL <br /> GUIDE
           </Link>
-
-          <button className="flex items-center ml-10 gap-1 text-sm text-gray-300 hover:text-white">
-            Browse
-            <span className="text-xs">▼</span>
-          </button>
-
-          <div className="relative hidden md:block">
-            <input
-              type="text"
-              placeholder="Search courses, categories, teachers and more"
-              className="w-96 rounded-full bg-[#efefef] px-4 py-2 pr-10 text-sm text-black placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <Search
-              size={16}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-          </div>
         </div>
 
-        {/* Center Nav */}
-        <div className="hidden lg:flex items-center gap-8 text-sm relative">
+        {/* Desktop Nav */}
+        <div className="hidden lg:flex items-center gap-8 text-sm">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = pathname.startsWith(link.href);
 
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative pb-1 transition ${
+                className={`relative pb-1 ${
                   isActive ? "text-white" : "text-gray-300 hover:text-white"
                 }`}
               >
                 {link.name}
-
                 {isActive && (
-                  <span className="absolute left-0 -bottom-1 h-[2px] w-full bg-blue-500 rounded-full" />
+                  <span className="absolute left-0 -bottom-1 h-[2px] w-full bg-blue-500" />
                 )}
               </Link>
             );
           })}
         </div>
 
-        {/* Right */}
-        <div className="flex items-center gap-3">
+        {/* Desktop Right */}
+        <div className="hidden lg:flex items-center gap-3">
           <Link
             href="/signup"
-            className="rounded-full border border-gray-500 px-5 py-2 text-sm text-white hover:border-white"
+            className="rounded-full border border-gray-500 px-4 py-2 text-sm text-white"
           >
             Sign up
           </Link>
-
           <Link
             href="/login"
-            className="rounded-full bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-500"
+            className="rounded-full bg-blue-600 px-4 py-2 text-sm text-white"
           >
             Login
           </Link>
         </div>
+
+        {/* Hamburger */}
+        <button
+          onClick={() => setIsOpen(true)}
+          className="lg:hidden text-white"
+        >
+          <Menu size={24} />
+        </button>
       </div>
+
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
+          {/* Menu Panel */}
+          <div
+            ref={menuRef}
+            className="absolute right-0 top-0 h-full w-[80%] max-w-sm bg-[#1B1B1B] p-6 flex flex-col"
+          >
+            {/* Close */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="self-end text-white mb-6"
+            >
+              <X size={24} />
+            </button>
+
+            {/* Search */}
+            <div className="relative mb-6">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full rounded-full bg-white px-4 py-2 pr-10 text-sm text-black"
+              />
+              <Search
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                size={16}
+              />
+            </div>
+
+            {/* Links */}
+            <div className="flex flex-col gap-4 text-white">
+              {navLinks.map((link) => {
+                const isActive = pathname.startsWith(link.href);
+
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className={`text-lg ${
+                      isActive ? "text-blue-500" : "text-gray-300"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Actions */}
+            <div className="mt-auto flex flex-col gap-3">
+              <Link
+                href="/signup"
+                className="rounded-full border border-gray-500 px-4 py-2 text-white text-center"
+              >
+                Sign up
+              </Link>
+              <Link
+                href="/login"
+                className="rounded-full bg-blue-600 px-4 py-2 text-white text-center"
+              >
+                Login
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
