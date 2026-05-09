@@ -71,7 +71,7 @@ export default async function CoursePage({ params }: Props) {
           </div>
 
           {/* Video */}
-          <div className="mt-10 overflow-hidden rounded-[40px] bg-black shadow-xl">
+          <div className="mt-10 overflow-hidden rounded-md bg-black shadow-xl">
             {course.videoUrl ? (
               <video controls className="w-full" src={course.videoUrl} />
             ) : (
