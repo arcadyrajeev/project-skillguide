@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-import CourseCard from "../courses/components/CourseCard";
+import CourseCard from "../components/CourseCard";
 
 export default function Featured() {
   const [courses, setCourses] = useState([]);
