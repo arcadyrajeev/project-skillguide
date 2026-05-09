@@ -32,16 +32,16 @@ export default function Featured() {
         {/* Header */}
         <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="mb-4 text-sm uppercase tracking-[0.3em] text-blue-600">
+            <p className="mb-4 text-sm heading uppercase tracking-[0.3em] text-blue-600">
               Featured Courses
             </p>
 
-            <h2 className="text-5xl font-bold tracking-tight text-gray-900">
+            <h2 className="text-5xl font-bold heading tracking-tight text-gray-900">
               Learn From Experts
             </h2>
           </div>
 
-          <p className="max-w-sm text-sm uppercase tracking-wide text-gray-500">
+          <p className="max-w-sm text-sm uppercase font-medium body-text tracking-wide text-gray-500">
             A curated list of our top rated and most popular courses.
           </p>
         </div>

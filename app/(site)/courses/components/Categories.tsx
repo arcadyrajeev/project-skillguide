@@ -47,7 +47,7 @@ export default function CategorySidebar({
 }: Props) {
   return (
     <aside className="w-full lg:w-[280px] lg:sticky lg:top-28 h-fit">
-      <div className="rounded-[32px] bg-white border border-black/5 shadow-sm p-6">
+      <div className="rounded-2xl bg-white border border-black/5 shadow-sm p-6">
         <h3 className="text-lg font-bold mb-6">Categories</h3>
 
         <div className="space-y-2">
