@@ -2,57 +2,61 @@ import { prisma } from "@/lib/prisma";
 
 import jwt from "jsonwebtoken";
 
+import { NextRequest } from "next/server";
+
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");
 
     const token = authHeader?.split(" ")[1];
 
-    if (!token) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Unauthorized",
-        },
-        { status: 401 },
-      );
+    let userId = null;
+
+    // Decode token if exists
+    if (token) {
+      try {
+        const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+
+        userId = decoded.id;
+      } catch {
+        userId = null;
+      }
     }
 
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    // Fetch courses
+    const courses = await prisma.course.findMany({
+      include: {
+        teacher: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
 
-    const body = await req.json();
+        enrollments: true,
+      },
 
-    // Prevent duplicate enrollment
-    const existingEnrollment = await prisma.enrollment.findFirst({
-      where: {
-        userId: decoded.id,
-        courseId: body.courseId,
+      orderBy: {
+        createdAt: "desc",
       },
     });
 
-    if (existingEnrollment) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Already enrolled",
-        },
-        { status: 400 },
-      );
-    }
+    // Add enrolled state
+    const formattedCourses = courses.map((course) => ({
+      ...course,
 
-    // Create enrollment
-    const enrollment = await prisma.enrollment.create({
-      data: {
-        userId: decoded.id,
-        courseId: body.courseId,
-      },
-    });
+      isEnrolled: course.enrollments.some(
+        (enrollment) => enrollment.userId === userId,
+      ),
+    }));
 
     return NextResponse.json({
       success: true,
-      enrollment,
+
+      courses: formattedCourses,
     });
   } catch (error) {
     console.log(error);

@@ -116,14 +116,24 @@ export default function CourseCard({ course }: Props) {
             <span>Self Paced</span>
           </div>
 
-          {/* Enroll */}
-          <button
-            onClick={handleEnroll}
-            disabled={loading}
-            className="rounded-full bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 px-5 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {loading ? "Enrolling..." : "Enroll"}
-          </button>
+          {course.isEnrolled ? (
+            <button
+              onClick={() => {
+                window.location.href = `/courses/${course.id}`;
+              }}
+              className="rounded-full bg-black px-5 py-2 text-sm font-medium text-white transition hover:opacity-90"
+            >
+              Watch Course
+            </button>
+          ) : (
+            <button
+              onClick={handleEnroll}
+              disabled={loading}
+              className="rounded-full bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 px-5 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loading ? "Enrolling..." : "Enroll"}
+            </button>
+          )}
         </div>
       </div>
     </div>
