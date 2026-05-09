@@ -2,8 +2,6 @@
 
 import { Clock3 } from "lucide-react";
 
-import { useEffect } from "react";
-
 import { useState } from "react";
 
 type Props = {
@@ -13,18 +11,7 @@ type Props = {
 export default function CourseCard({ course }: Props) {
   const [loading, setLoading] = useState(false);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   const [isEnrolled, setIsEnrolled] = useState(course.isEnrolled || false);
-
-  // Check auth state
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
 
   async function handleEnroll() {
     try {
@@ -32,7 +19,7 @@ export default function CourseCard({ course }: Props) {
 
       const token = localStorage.getItem("token");
 
-      // No user
+      // User not logged in
       if (!token) {
         alert("Login required");
 
@@ -62,7 +49,7 @@ export default function CourseCard({ course }: Props) {
         return;
       }
 
-      // Other error
+      // Error
       if (!data.success) {
         alert(data.message);
 
@@ -133,8 +120,8 @@ export default function CourseCard({ course }: Props) {
             <span>Self Paced</span>
           </div>
 
-          {/* Buttons */}
-          {isLoggedIn && isEnrolled ? (
+          {/* Right */}
+          {isEnrolled ? (
             <button
               onClick={() => {
                 window.location.href = `/courses/${course.id}`;
