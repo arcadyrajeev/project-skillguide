@@ -5,6 +5,7 @@ import MyLearningSection from "./sections/MyLearningSection";
 import ExploreSection from "./sections/ExploreSection";
 import SettingsSection from "./sections/SettingsSection";
 import CreateCourseSection from "./sections/CreateCourseSection";
+import YourCoursesSection from "./sections/YourCoursesSection";
 
 type DashboardProps = {
   dashboardData: any;
@@ -32,6 +33,9 @@ export default function DashboardContent({
 
     case "create-course":
       return <CreateCourseSection />;
+
+    case "your-courses":
+      return <YourCoursesSection createdCourses={createdCourses} />;
 
     default:
       return null;
