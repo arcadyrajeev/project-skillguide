@@ -1,27 +1,50 @@
 import { prisma } from "@/lib/prisma";
+
+import jwt from "jsonwebtoken";
+
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function POST(req: Request) {
   try {
-    const courses = await prisma.course.findMany({
-      include: {
-        teacher: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
+    // Get token
+    const authHeader = req.headers.get("authorization");
 
-      orderBy: {
-        createdAt: "desc",
+    const token = authHeader?.split(" ")[1];
+
+    if (!token) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        { status: 401 },
+      );
+    }
+
+    // Verify token
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+
+    // Parse body
+    const body = await req.json();
+
+    // Create course
+    const course = await prisma.course.create({
+      data: {
+        title: body.title,
+
+        description: body.description,
+
+        thumbnail: body.thumbnail,
+
+        videoUrl: body.videoUrl,
+
+        teacherId: decoded.id,
       },
     });
 
     return NextResponse.json({
       success: true,
-      courses,
+      course,
     });
   } catch (error) {
     console.log(error);
