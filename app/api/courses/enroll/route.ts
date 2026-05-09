@@ -2,61 +2,62 @@ import { prisma } from "@/lib/prisma";
 
 import jwt from "jsonwebtoken";
 
-import { NextRequest } from "next/server";
-
 import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function POST(req: Request) {
   try {
+    // Auth header
     const authHeader = req.headers.get("authorization");
 
     const token = authHeader?.split(" ")[1];
 
-    let userId = null;
-
-    // Decode token if exists
-    if (token) {
-      try {
-        const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
-
-        userId = decoded.id;
-      } catch {
-        userId = null;
-      }
+    // No token
+    if (!token) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        { status: 401 },
+      );
     }
 
-    // Fetch courses
-    const courses = await prisma.course.findMany({
-      include: {
-        teacher: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
+    // Verify JWT
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
 
-        enrollments: true,
-      },
+    // Request body
+    const body = await req.json();
 
-      orderBy: {
-        createdAt: "desc",
+    // Already enrolled?
+    const existingEnrollment = await prisma.enrollment.findFirst({
+      where: {
+        userId: decoded.id,
+
+        courseId: body.courseId,
       },
     });
 
-    // Add enrolled state
-    const formattedCourses = courses.map((course) => ({
-      ...course,
+    if (existingEnrollment) {
+      return NextResponse.json({
+        success: true,
 
-      isEnrolled: course.enrollments.some(
-        (enrollment) => enrollment.userId === userId,
-      ),
-    }));
+        message: "Already enrolled",
+      });
+    }
+
+    // Create enrollment
+    const enrollment = await prisma.enrollment.create({
+      data: {
+        userId: decoded.id,
+
+        courseId: body.courseId,
+      },
+    });
 
     return NextResponse.json({
       success: true,
 
-      courses: formattedCourses,
+      enrollment,
     });
   } catch (error) {
     console.log(error);
@@ -64,6 +65,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         success: false,
+
         message: "Server error",
       },
       { status: 500 },
