@@ -113,7 +113,14 @@ export default function CourseCard({ course }: Props) {
 
   return (
     <Link
-      href={`/courses/${course.id}`}
+      href={isEnrolled ? `/courses/${course.id}` : "#"}
+      onClick={(e) => {
+        if (!isEnrolled) {
+          e.preventDefault();
+
+          alert("Enroll in the course to watch");
+        }
+      }}
       className="group block cursor-pointer overflow-hidden rounded-[32px] border border-black/5 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
     >
       {/* Thumbnail */}
