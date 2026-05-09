@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { Clock3 } from "lucide-react";
 
 import { useState } from "react";
@@ -23,11 +25,14 @@ export default function CourseCard({ course }: Props) {
 
   const isEnrolled = enrolledCourses.includes(course.id);
 
-  async function handleEnroll() {
+  async function handleEnroll(e: React.MouseEvent) {
+    e.preventDefault();
+
+    e.stopPropagation();
+
     try {
       setLoading(true);
 
-      // Not logged in
       if (!user) {
         alert("Login required");
 
@@ -52,26 +57,65 @@ export default function CourseCard({ course }: Props) {
 
       const data = await response.json();
 
-      // Error
       if (!data.success) {
         alert(data.message);
 
         return;
       }
 
-      // Update global state
       setEnrolledCourses((prev) => [...prev, course.id]);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-      alert("Something went wrong");
+  async function handleUnenroll(e: React.MouseEvent) {
+    e.preventDefault();
+
+    e.stopPropagation();
+
+    try {
+      setLoading(true);
+
+      const token = localStorage.getItem("token");
+
+      const response = await fetch("/api/courses/unenroll", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+
+          Authorization: `Bearer ${token}`,
+        },
+
+        body: JSON.stringify({
+          courseId: course.id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        alert(data.message);
+
+        return;
+      }
+
+      setEnrolledCourses((prev) => prev.filter((id) => id !== course.id));
+    } catch (error) {
+      console.log(error);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="group overflow-hidden rounded-[32px] border border-black/5 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <Link
+      href={`/courses/${course.id}`}
+      className="group block cursor-pointer overflow-hidden rounded-[32px] border border-black/5 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+    >
       {/* Thumbnail */}
       <div className="relative h-60 overflow-hidden">
         <img
@@ -126,24 +170,23 @@ export default function CourseCard({ course }: Props) {
           {/* Right */}
           {isEnrolled ? (
             <button
-              onClick={() => {
-                window.location.href = `/courses/${course.id}`;
-              }}
-              className="cursor-pointer rounded-full bg-black px-5 py-2 text-sm font-medium text-white transition hover:opacity-90"
+              onClick={handleUnenroll}
+              disabled={loading}
+              className="cursor-pointer rounded-full bg-black px-5 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-50"
             >
-              Watch Course
+              {loading ? "Removing..." : "Unenroll"}
             </button>
           ) : (
             <button
               onClick={handleEnroll}
               disabled={loading}
-              className="cursor-pointer rounded-full bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 px-5 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-pointer rounded-full bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 px-5 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-50"
             >
               {loading ? "Enrolling..." : "Enroll"}
             </button>
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
