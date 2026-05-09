@@ -1,46 +1,55 @@
 "use client";
 
+type Props = {
+  selectedCategory: string;
+
+  setSelectedCategory: (category: string) => void;
+};
+
 const categories = [
-  "Art & Craft",
-  "Illustration",
-  "Craft",
-  "Marketing & Business",
-  "Photography & Video",
+  "All",
+  "Development",
   "Design",
-  "3D & Animation",
-  "Architecture & Spaces",
-  "Writing",
-  "Fashion",
-  "Web & App Design",
-  "Calligraphy & Typography",
-  "Music & Audio",
-  "Culinary",
+  "Business",
+  "Marketing",
   "Artificial Intelligence",
-  "Wellness",
-  "How to become",
+  "Photography",
+  "Music",
+  "Writing",
+  "Animation",
+  "UI UX",
+  "Productivity",
 ];
 
-export default function CategorySidebar() {
+export default function CategorySidebar({
+  selectedCategory,
+  setSelectedCategory,
+}: Props) {
   return (
-    <aside className="w-full lg:w-[260px] lg:border-r lg:pr-6">
-      <h3 className="text-sm font-semibold text-gray-600 mb-4">Categories</h3>
+    <aside className="w-full lg:w-[280px] lg:sticky lg:top-28 h-fit">
+      <div className="rounded-[32px] bg-white border border-black/5 shadow-sm p-6">
+        <h3 className="text-lg font-bold mb-6">Categories</h3>
 
-      <ul className="space-y-4">
-        {categories.map((cat, i) => (
-          <li
-            key={i}
-            className={`text-sm cursor-pointer hover:text-blue-600 ${
-              i === 0 ? "text-blue-600 font-medium" : "text-gray-600"
-            }`}
-          >
-            {cat}
+        <div className="space-y-2">
+          {categories.map((category) => {
+            const isActive = selectedCategory === category;
 
-            {i === 0 && (
-              <div className="h-[2px] w-20 bg-blue-600 mt-1 rounded"></div>
-            )}
-          </li>
-        ))}
-      </ul>
+            return (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`w-full cursor-pointer rounded-2xl px-5 py-4 text-left text-sm font-medium transition-all ${
+                  isActive
+                    ? "bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 text-white shadow-lg"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+              >
+                {category}
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </aside>
   );
 }

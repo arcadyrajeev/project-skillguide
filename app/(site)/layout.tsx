@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "../globals.css";
+
+import { AuthProvider } from "@/context/AuthContext";
 import Navbar from "../components/navbar";
 import Footer from "../components/Footer";
 
@@ -16,9 +18,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <AuthProvider>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

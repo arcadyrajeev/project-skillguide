@@ -1,70 +1,45 @@
 import CourseCard from "@/app/components/CourseCard";
 
-const courses = [
-  {
-    title: "Course Title | Course Name",
-    creator: "Creator's name",
-    duration: "1hr 30minutes",
-    views: "30,345",
-    likes: "3k",
-  },
-  {
-    title: "Course Title | Course Name",
-    creator: "Creator's name",
-    duration: "1hr 30minutes",
-    views: "30,345",
-    likes: "3k",
-  },
-  {
-    title: "Course Title | Course Name",
-    creator: "Creator's name",
-    duration: "1hr 30minutes",
-    views: "30,345",
-    likes: "3k",
-  },
-  {
-    title: "Course Title | Course Name",
-    creator: "Creator's name",
-    duration: "1hr 30minutes",
-    views: "30,345",
-    likes: "3k",
-  },
-  {
-    title: "Course Title | Course Name",
-    creator: "Creator's name",
-    duration: "1hr 30minutes",
-    views: "30,345",
-    likes: "3k",
-  },
-  {
-    title: "Course Title | Course Name",
-    creator: "Creator's name",
-    duration: "1hr 30minutes",
-    views: "30,345",
-    likes: "3k",
-  },
-];
+type Props = {
+  courses: any[];
+  loading: boolean;
+};
 
-export default function CoursesGrid() {
+export default function CoursesGrid({ courses, loading }: Props) {
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        Loading courses...
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1">
-      <div className="mb-6 text-sm text-gray-500">
-        Courses <span className="mx-2">›</span> Art & Craft
+      {/* Top Bar */}
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <p className="text-sm text-gray-500">Showing all courses</p>
+
+          <h2 className="mt-1 text-3xl font-bold">{courses.length} Courses</h2>
+        </div>
+
+        <div className="hidden md:flex items-center gap-3">
+          <button className="rounded-full border border-black/10 bg-white px-5 py-2 text-sm font-medium hover:bg-gray-50">
+            Latest
+          </button>
+
+          <button className="rounded-full border border-black/10 bg-white px-5 py-2 text-sm font-medium hover:bg-gray-50">
+            Popular
+          </button>
+        </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 p-6">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {courses.map((course, i) => (
-            <CourseCard
-              key={i}
-              title={course.title}
-              creator={course.creator}
-              duration={course.duration}
-              views={course.views}
-              likes={course.likes}
-            />
-          ))}
-        </div>
+      {/* Grid */}
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        {courses.map((course: any) => (
+          <CourseCard key={course.id} course={course} />
+        ))}
       </div>
     </div>
   );
