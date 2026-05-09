@@ -4,6 +4,8 @@ import { Clock3 } from "lucide-react";
 
 import { useState } from "react";
 
+import { useAuth } from "@/context/AuthContext";
+
 type Props = {
   course: any;
 };
@@ -11,20 +13,28 @@ type Props = {
 export default function CourseCard({ course }: Props) {
   const [loading, setLoading] = useState(false);
 
-  const [isEnrolled, setIsEnrolled] = useState(course.isEnrolled || false);
+  const {
+    user,
+
+    enrolledCourses,
+
+    setEnrolledCourses,
+  } = useAuth();
+
+  const isEnrolled = enrolledCourses.includes(course.id);
 
   async function handleEnroll() {
     try {
       setLoading(true);
 
-      const token = localStorage.getItem("token");
-
-      // User not logged in
-      if (!token) {
+      // Not logged in
+      if (!user) {
         alert("Login required");
 
         return;
       }
+
+      const token = localStorage.getItem("token");
 
       const response = await fetch("/api/courses/enroll", {
         method: "POST",
@@ -42,13 +52,6 @@ export default function CourseCard({ course }: Props) {
 
       const data = await response.json();
 
-      // Already enrolled
-      if (data.message === "Already enrolled") {
-        setIsEnrolled(true);
-
-        return;
-      }
-
       // Error
       if (!data.success) {
         alert(data.message);
@@ -56,8 +59,8 @@ export default function CourseCard({ course }: Props) {
         return;
       }
 
-      // Success
-      setIsEnrolled(true);
+      // Update global state
+      setEnrolledCourses((prev) => [...prev, course.id]);
     } catch (error) {
       console.log(error);
 
@@ -126,7 +129,7 @@ export default function CourseCard({ course }: Props) {
               onClick={() => {
                 window.location.href = `/courses/${course.id}`;
               }}
-              className="rounded-full bg-black px-5 py-2 text-sm font-medium text-white transition hover:opacity-90"
+              className="cursor-pointer rounded-full bg-black px-5 py-2 text-sm font-medium text-white transition hover:opacity-90"
             >
               Watch Course
             </button>
@@ -134,7 +137,7 @@ export default function CourseCard({ course }: Props) {
             <button
               onClick={handleEnroll}
               disabled={loading}
-              className="rounded-full bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 px-5 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-pointer rounded-full bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 px-5 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? "Enrolling..." : "Enroll"}
             </button>

@@ -4,20 +4,39 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 type UserType = {
   id: string;
+
   name: string;
+
   email: string;
+
   role: string;
 };
 
 type AuthContextType = {
   user: UserType | null;
+
   loading: boolean;
+
+  enrolledCourses: string[];
+
+  setEnrolledCourses: React.Dispatch<React.SetStateAction<string[]>>;
+
+  setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
+
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
+
   loading: true,
+
+  enrolledCourses: [],
+
+  setEnrolledCourses: () => {},
+
+  setUser: () => {},
+
   logout: () => {},
 });
 
@@ -26,21 +45,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+  const [enrolledCourses, setEnrolledCourses] = useState<string[]>([]);
 
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const storedUser = localStorage.getItem("user");
+
+        const token = localStorage.getItem("token");
+
+        // No user
+        if (!storedUser || !token) {
+          setLoading(false);
+
+          return;
+        }
+
+        const parsedUser = JSON.parse(storedUser);
+
+        setUser(parsedUser);
+
+        // Fetch enrolled courses
+        const response = await fetch("/api/users/enrollments", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setEnrolledCourses(
+            data.enrollments.map((enrollment: any) => enrollment.courseId),
+          );
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    setLoading(false);
+    loadUser();
   }, []);
 
   function logout() {
     localStorage.removeItem("token");
+
     localStorage.removeItem("user");
 
     setUser(null);
+
+    setEnrolledCourses([]);
 
     window.location.href = "/";
   }
@@ -49,7 +105,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+
+        setUser,
+
         loading,
+
+        enrolledCourses,
+
+        setEnrolledCourses,
+
         logout,
       }}
     >
