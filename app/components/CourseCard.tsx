@@ -2,6 +2,8 @@
 
 import { Clock3 } from "lucide-react";
 
+import { useEffect } from "react";
+
 import { useState } from "react";
 
 type Props = {
@@ -11,17 +13,28 @@ type Props = {
 export default function CourseCard({ course }: Props) {
   const [loading, setLoading] = useState(false);
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [isEnrolled, setIsEnrolled] = useState(course.isEnrolled || false);
+
+  // Check auth state
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   async function handleEnroll() {
     try {
       setLoading(true);
 
       const token = localStorage.getItem("token");
 
-      // Not logged in
+      // No user
       if (!token) {
-        alert("Please login first");
-
-        window.location.href = "/login";
+        alert("Login required");
 
         return;
       }
@@ -42,7 +55,14 @@ export default function CourseCard({ course }: Props) {
 
       const data = await response.json();
 
-      // Error
+      // Already enrolled
+      if (data.message === "Already enrolled") {
+        setIsEnrolled(true);
+
+        return;
+      }
+
+      // Other error
       if (!data.success) {
         alert(data.message);
 
@@ -50,10 +70,7 @@ export default function CourseCard({ course }: Props) {
       }
 
       // Success
-      alert("Successfully enrolled");
-
-      // Redirect to course page
-      window.location.href = `/courses/${course.id}`;
+      setIsEnrolled(true);
     } catch (error) {
       console.log(error);
 
@@ -116,7 +133,8 @@ export default function CourseCard({ course }: Props) {
             <span>Self Paced</span>
           </div>
 
-          {course.isEnrolled ? (
+          {/* Buttons */}
+          {isLoggedIn && isEnrolled ? (
             <button
               onClick={() => {
                 window.location.href = `/courses/${course.id}`;
