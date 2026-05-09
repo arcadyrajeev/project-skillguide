@@ -27,7 +27,7 @@ export default function CreateCourseSection() {
 
     formData.append("file", file);
 
-    formData.append("upload_preset", "skillguide");
+    formData.append("upload_preset", "skillguide_uploads");
 
     formData.append("folder", "skillguide");
 
