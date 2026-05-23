@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 interface ReviewCardProps {
   name: string;
   role: string;
@@ -15,11 +17,12 @@ export default function ReviewCard({
     <div className="rounded-3xl body-text bg-[#f7f7f7] p-6">
       {/* Header */}
       <div className="mb-4 flex  items-center gap-3">
-        <div className="h-10 w-10 rounded-full bg-gray-300 overflow-hidden">
+        <div className="h-10 relative w-10 rounded-full bg-gray-300 overflow-hidden">
           {avatar && (
-            <img
+            <Image
               src={avatar}
               alt={name}
+              fill
               className="h-full w-full object-cover"
             />
           )}
